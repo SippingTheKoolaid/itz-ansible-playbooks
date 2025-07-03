@@ -102,7 +102,7 @@
       until: 
        - wbxi_status['json']['account'] is defined
        - wbxi_status['json']['account']['configState'] == "Configured"
-      delay: 15
+      delay: 30
       retries: 30
       when: 
         - account_apikey is defined
