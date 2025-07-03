@@ -23,7 +23,7 @@
         account_id: "{{ account_json['account_id'] }}"
         account_owner_id: "IBMid-662001YCY3"
         owner_id: "{{ environment_json['owner_id'] }}"
-        cos_name: "cos-{{ environment_json['owner_id'] }}"
+        cos_name: "cos-{% if environment_json['owner_id'] is contains("-") %}{{ environment_json['owner_id']|split('-')[1]|lower }}{% else %}{{ environment_json['owner_id']|lower }}{% endif %}"
 
     - name: Show response
       ansible.builtin.debug:
