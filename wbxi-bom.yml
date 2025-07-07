@@ -1,0 +1,192 @@
+{
+  "services":
+    [
+      {
+        "friendly_name": "Watson Machine Learning",
+        "instance": "",
+        "service": "pm-20",
+        "prefix": "wml",
+        "plan": "lite",
+        "parameters": {},
+        "resource_group_id": "",
+        "region": "",
+        "lock": "true",
+        "enable": "true"
+      },
+      {
+        "friendly_name": "Watson Studio",
+        "instance": "",
+        "service": "data-science-experience",
+        "prefix": "ws",
+        "plan": "free-v1",
+        "parameters": {},
+        "resource_group_id": "",
+        "region": "",
+        "lock": "true",
+        "enable": "true",
+      },
+      {
+        "friendly_name": "Cloud Object Store",
+        "instance": "",
+        "prefix": "cos",
+        "service": "cloud-object-storage",
+        "plan": "standard",
+        "parameters": {},
+        "resource_group_id": "",
+        "region": "global",
+        "lock": "true",
+        "enable": "true"
+      },
+      {
+        "friendly_name": "watsonx.BI",
+        "instance": "",
+        "prefix": "wxbi",
+        "service": "watsonx-intelligence",
+        "plan": "trial",
+        "parameters": {},
+        "resource_group_id": "",
+        "region": "",
+        "create": "1h",
+        "lock": "true",
+        "enable": "true"
+      }
+    ],
+  "access":
+    [
+      {
+        "instance": "ml_policy",
+        "friendly_name": "Machine Learning Policy",
+        "access_group_id": "",
+        "account_level_services_and_roles":
+          { "pm-20": "Manager,Administrator" },
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "ws_policy",
+        "friendly_name": "Watson Studio Policy",
+        "access_group_id": "",
+        "account_level_services_and_roles":
+          {
+            "data-science-experience": "Viewer,Operator,Editor,Service Configuration Reader"
+          },
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "wxbi_policy",
+        "friendly_name": "watsonx BI Policy",
+        "access_group_id": "",
+        "account_level_services_and_roles":
+          { "watsonx-intelligence": "Manager,Administrator" },
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "dataintelligence_policy",
+        "friendly_name": "watsonx BI Policy",
+        "access_group_id": "",
+        "account_level_services_and_roles":
+          { "datacatalog": "Manager,Administrator" },
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "wxgov_policy",
+        "friendly_name": "watsonx Governance Policy",
+        "access_group_id": "",
+        "account_level_services_and_roles":
+          { "aiopenscale": "Reader,Writer,Administrator" },
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "cos_policy",
+        "friendly_name": "Cloud Object Storage Policy",
+        "access_group_id": "",
+        "account_level_services_and_roles":
+          { "cloud-object-storage": "Manager,Viewer,Operator,Editor" },
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "default_access",
+        "friendly_name": "Default access",
+        "access_group_id": "",
+        "account_level_services_and_roles": {},
+        "all_iam_account_management_services_roles": "Service ID creator,User API key creator,API key reviewer",
+        "all_iam_enabled_services_roles": "",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "Administrator",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      },
+      {
+        "instance": "Resource ownership",
+        "friendly_name": "Resource owner",
+        "access_group_id": "",
+        "account_level_services_and_roles": {},
+        "all_iam_account_management_services_roles": "",
+        "all_iam_enabled_services_roles": "Manager,Reader,Writer,Viewer,Operator,Service Configuration Reader,Key Manager",
+        "global_resource_group_management_roles": "",
+        "resource_group_id": "",
+        "resource_group_services_and_roles": {},
+        "specific_resource_group_access_roles": "",
+        "specific_resource_group_management_roles": "",
+        "enable": "true"
+      }
+    ],
+  "authorizations":
+    [
+      {
+        "instance": "wxd_ikc_authorizations",
+        "friendly_name": "watsonx.data to data intelligence authorization",
+        "service_to_resource_type_authorizations":
+          {
+            "project=lakehouse": "Watsonx.data Service Access (For Service to Service Authorization Only) for IKC",
+            "project=datacatalog": "DataAccess,MetastoreViewerViewer"
+          },
+        "service_to_service_authorizations":
+          { "project=resource-group": "Viewer" },
+        "enable": "false"
+      }
+    ]
+}
