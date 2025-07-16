@@ -23,7 +23,7 @@
         account_id: "{{ account_json['account_id'] }}"
         account_owner_id: "IBMid-662001YCY3"
         owner_id: "{{ environment_json['requester_id'] }}"
-        cos_name: "cos-{% if environment_json['requester_id'] is contains('-') %}{{ (environment_json['requester_id']|split('-'))[1] }}{% else %}{{ environment_json['requester_id'] }}{% endif %}"
+        cos_name: "cos-{% if '-' in environment_json['requester_id'] %}{{ (environment_json['requester_id']|split('-'))[1]|lower }}{% else %}{{ environment_json['requester_id']|lower }}{% endif %}"
 
     - name: Show response
       ansible.builtin.debug:
