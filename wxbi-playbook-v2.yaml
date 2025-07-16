@@ -1,0 +1,144 @@
+---
+- name: Configure watsonx BI post-deployment of services
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    delay_seconds: 10
+    retry_count: 3 
+
+  tasks:
+    - name: Set facts for supplied variables to convert from json
+      ansible.builtin.set_fact:
+        account_json: "{{ account_variables|from_json }}"
+        environment_json: "{{ environment_variables|from_json }}"
+        service_instances_json: "{{ service_instances_variables|from_json }}"
+        extra_variables_json: "{{ extra_variables|from_json }}"
+
+    # Configure the apikey from --extra-vars provided
+    - name: Set facts from supplied json data
+      ansible.builtin.set_fact:
+        account_apikey: "{{ account_json['account_api_key'] }}"
+        account_name: "{{ account_json['account_name'] }}"
+        account_id: "{{ account_json['account_id'] }}"
+        account_owner_id: "IBMid-662001YCY3"
+        owner_id: "{{ environment_json['requester_id'] }}"
+        cos_name: "cos-{% if environment_json['requester_id'] is contains('-') %}{{ (environment_json['requester_id']|split('-'))[1] }}{% else %}{{ environment_json['requester_id'] }}{% endif %}"
+
+    - name: Show response
+      ansible.builtin.debug:
+        msg: "cos_name: {{ cos_name }}"  
+
+    # Connect using the supplied API Key and get a Bearer Token for all future
+    # API calls to use.
+    - name: Connect to IBM Cloud account {{ account_name }} with API key and retrieve access_token
+      ansible.builtin.uri:
+        url: "https://iam.cloud.ibm.com/identity/token"
+        method: POST
+        return_content: yes
+        body_format: form-urlencoded
+        body: { "apikey": "{{ account_apikey }}", "grant_type": "urn:ibm:params:oauth:grant-type:apikey" }
+      register: token_response
+      delay: "{{ delay_seconds }}"
+      retries: "{{ retry_count }}"
+      when: 
+        - account_apikey is defined
+        - account_apikey != None
+
+    # Set the Bearer token value based on json returned by login
+    - name: Set fact access_token
+      ansible.builtin.set_fact:
+        access_token: "{{ token_response['json'].access_token }}"
+      when: 
+        - token_response['json'].access_token is defined
+
+    # Configure WXBI
+    - name: Configure watsonx BI on IBM Cloud account {{ account_name }}
+      ansible.builtin.uri:
+        url: "https://dataplatform.cloud.ibm.com:443/wxbi/api/v1/configuration"
+        method: PUT
+        return_content: yes
+        headers:
+          Content-Type: "application/json"
+          Accept: "application/json"
+          Authorization: "Bearer {{ access_token }}"
+          x-account-owner: "{{ account_owner_id }}"
+          x-user-id: "{{ owner_id }}"
+        body_format: json
+        body: { "accountId": "{{ account_id }}", "cosName": "{{ cos_name }}", "settings": { "llm.sql_gen": "meta-llama/llama-4-maverick-17b-128e-instruct-fp8i" } }
+        status_code:
+          - 200
+          - 201
+          - 202
+          - 409
+      register: wbxi_configure
+      delay: "{{ delay_seconds }}"
+      retries: "{{ retry_count }}"
+      when: 
+        - account_apikey is defined
+        - account_apikey != None
+
+    # - name: Show response
+    #   ansible.builtin.debug:
+    #     msg: "{{ wbxi_configure }}"  
+
+    # Verify WXBI configuration completed
+    - name: Verify configuration complete for watsonx BI on IBM Cloud account {{ account_name }}
+      ansible.builtin.uri:
+        url: "https://dataplatform.cloud.ibm.com/wxbi/api/v1/configuration?details=false&clear_cache=true&enable_upgrade=false"
+        method: GET
+        return_content: yes
+        headers:
+          Content-Type: "application/json"
+          Accept: "application/json"
+          Authorization: "Bearer {{ access_token }}"
+          x-account-owner: "{{ account_owner_id }}"
+          x-user-id: "{{ owner_id }}"
+        status_code:
+          - 200
+          - 201
+          - 202
+      register: wbxi_status
+      until: 
+       - wbxi_status['json']['account'] is defined
+       - wbxi_status['json']['account']['configState'] == "Configured"
+      delay: 30
+      retries: 30
+      when: 
+        - account_apikey is defined
+        - account_apikey != None
+
+    # - name: Show response
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - "{{ wbxi_status }}"
+
+    # Define access
+    - name: Define data_analyst persona for {{ owner_id }} in watsonx BI on IBM Cloud account {{ account_name }}
+      ansible.builtin.uri:
+        url: "https://dataplatform.cloud.ibm.com/wxbi/api/v1/configuration?details=false&clear_cache=true&enable_upgrade=false"
+        method: PUT
+        return_content: yes
+        headers:
+          Content-Type: "application/json"
+          Accept: "application/json"
+          Authorization: "Bearer {{ access_token }}"
+          x-account-owner: "{{ account_owner_id }}"
+          x-user-id: "{{ owner_id }}"
+        body_format: json
+        body: { "user_id": "{{ owner_id }}", "persona":"data_analyst" }
+        status_code:
+          - 200
+          - 201
+          - 202
+      register: wbxi_persona
+      delay: "{{ delay_seconds }}"
+      retries: "{{ retry_count }}"
+      when: 
+        - account_apikey is defined
+        - account_apikey != None
+
+    # - name: Show response
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - "{{ wbxi_persona }}"
